@@ -5,4 +5,6 @@ package de.htwg.nich.minesweeper.control.impl
  */
 class MineControl {
 
+  
+
 }

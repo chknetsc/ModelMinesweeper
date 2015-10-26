@@ -1,11 +1,11 @@
 package de.htwg.nich.minesweeper.control.impl
 
-import de.htwg.nich.minesweeper.model.{MineBox, MineField}
+import de.htwg.nich.minesweeper.model.MineBox
 
 import scala.util.Random
 
 object MineFieldGenerator {
-  def returnFieldAfterFirstClick(size: (Int, Int), mineCount: Int, clickPosition: (Int, Int), mineField: MineField): MineField = {
+  def returnFieldAfterFirstClick(size: (Int, Int), mineCount: Int, clickPosition: (Int, Int), mineField: Array[Array[MineBox]]): Array[Array[MineBox]] = {
     val minesPositions = assembleMinePositionsList
     val minesAroundList = calculateMinesAround(minesPositions)
     assembleRefreshedMineField(minesAroundList, minesPositions)
@@ -72,22 +72,22 @@ object MineFieldGenerator {
       minesAroundMap
     }
 
-    def assembleRefreshedMineField(minesAround: Array[Array[Int]], minePositions: List[(Int, Int)]): MineField = {
+    def assembleRefreshedMineField(minesAround: Array[Array[Int]], minePositions: List[(Int, Int)]): Array[Array[MineBox]] = {
       val mineBoxField: Array[Array[MineBox]] = _
       for (x <- 0 until size._1; y <- 0 until size._2) {
         mineBoxField(x)(y) = new MineBox((x, y), minesAround(x)(y), minePositions.contains((x, y)), true, false)
       }
-      new MineField((size._1, size._2), mineCount, mineBoxField)
+      mineBoxField
     }
   }
 
-  def returnInitialField(size: (Int, Int), mineCount: Int): MineField = {
+  def returnInitialField(size: (Int, Int), mineCount: Int): Array[Array[MineBox]] = {
     val initialField = Array.ofDim[MineBox](size._1,size._2)
     for (i <- 0 until size._1; j <- 0 until size._2) {
       initialField(i)(j) = new MineBox((i, j), 0, false, true, false)
     }
 
-    new MineField(size, mineCount, initialField)
+    initialField
 
   }
 }
