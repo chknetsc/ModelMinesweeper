@@ -1,28 +1,21 @@
 package de.htwg.nich.minesweeper.control.impl
 
-import de.htwg.nich.minesweeper.model.MineBox
+import de.htwg.nich.minesweeper.model.{GameState, GameData, MineBox}
 
 object MineFieldRefresher {
-
-  var currentGameState: GameState.Value = GameState.NewGame
 
   object ClickMode extends Enumeration {
     type clickMode = Value
     val Click, Toggle = Value
   }
 
-  object GameState extends Enumeration {
-    type gameState = Value
-    val Won, Lost, NewGame = Value
-  }
-
-  def returnRefreshedMineField(size: (Int, Int), mineBoxArray: Array[Array[MineBox]], clickPosition: (Int, Int), clickMode: ClickMode.clickMode): Array[Array[MineBox]] = {
+  def returnRefreshedMineField(size: (Int, Int), mineBoxArray: Array[Array[MineBox]], clickPosition: (Int, Int), clickMode: ClickMode.clickMode, gameData:GameData): Array[Array[MineBox]] = {
     val returnMineBoxField = Array.ofDim[MineBox](size._1, size._2)
     if (clickMode == ClickMode.Click) {
       if (mineBoxArray(clickPosition._1)(clickPosition._2).isMine) {
-        currentGameState = GameState.Lost
+        gameData.currentGameState = GameState.Lost
       } else if (allBoxesUncovered) {
-        currentGameState = GameState.Won
+        gameData.currentGameState = GameState.Won
       }
     } else if (clickMode == ClickMode.Toggle) {
       if (mineBoxArray(clickPosition._1)(clickPosition._2).isFlagged) {

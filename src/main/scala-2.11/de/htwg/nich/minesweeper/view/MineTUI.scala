@@ -10,7 +10,7 @@ class MineTUI {
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {
     val sb = new StringBuilder
     val sizeX = mineField.length
-    val sizeY = mineField(sizeX).length
+    val sizeY = mineField(0).length
     val numberWithTwoDigits = 10
     val newline = System.lineSeparator()
 
@@ -22,8 +22,8 @@ class MineTUI {
       } else {
         sb.append("{").append(x).append("}")
       }
-      sb.append(newline)
     }
+    sb.append(newline)
 
     for (y <- 0 until sizeY) {
       if (y < numberWithTwoDigits) {
@@ -47,6 +47,8 @@ class MineTUI {
       }
       sb.append(newline);
     }
+
+    print((sb.toString))
 
   }
 
