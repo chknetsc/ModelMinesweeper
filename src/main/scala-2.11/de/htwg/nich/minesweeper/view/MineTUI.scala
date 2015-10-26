@@ -7,11 +7,47 @@ import de.htwg.nich.minesweeper.model.MineBox
  */
 class MineTUI {
 
-  def main(args: Array[String]) {
+  def printTUI(mineField: Array[Array[MineBox]]): Unit = {
+    val sb = new StringBuilder
+    val sizeX = mineField.length
+    val sizeY = mineField(sizeX).length
+    val numberWithTwoDigits = 10
+    val newline = System.lineSeparator()
+
+    sb.append("    ")
+
+    for (x <- 0 until sizeX) {
+      if (x < numberWithTwoDigits) {
+        sb.append("{ ").append(x).append("}")
+      } else {
+        sb.append("{").append(x).append("}")
+      }
+      sb.append(newline)
+    }
+
+    for (y <- 0 until sizeY) {
+      if (y < numberWithTwoDigits) {
+        sb.append("{ ").append(y).append("}");
+      } else {
+        sb.append("{").append(y).append("}");
+      }
+
+      for (x <- 0 until sizeX) {
+        val thisBox: MineBox = mineField(x)(y)
+        if (thisBox.isFlagged && thisBox.isCovered) {
+          sb.append("[ F]");
+        } else if (thisBox.isCovered) {
+          sb.append("[  ]");
+        } else if (thisBox.isMine) {
+          sb.append("[ X]");
+        } else {
+          sb.append("[ ").append(thisBox.minesAround)
+            .append("]");
+        }
+      }
+      sb.append(newline);
+    }
 
   }
 
-  def printField(mineField: Array[Array[MineBox]]): Unit = {
-
-  }
 }

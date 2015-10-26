@@ -4,7 +4,7 @@ import de.htwg.nich.minesweeper.model.MineBox
 
 object MineFieldRefresher {
 
-  var currentGameState:GameState.Value = GameState.NewGame
+  var currentGameState: GameState.Value = GameState.NewGame
 
   object ClickMode extends Enumeration {
     type clickMode = Value
@@ -17,11 +17,11 @@ object MineFieldRefresher {
   }
 
   def returnRefreshedMineField(size: (Int, Int), mineBoxArray: Array[Array[MineBox]], clickPosition: (Int, Int), clickMode: ClickMode.clickMode): Array[Array[MineBox]] = {
-    val returnMineBoxField: Array[Array[MineBox]] = _
+    val returnMineBoxField = Array.ofDim[MineBox](size._1, size._2)
     if (clickMode == ClickMode.Click) {
-      if(mineBoxArray(clickPosition._1)(clickPosition._2).isMine){
+      if (mineBoxArray(clickPosition._1)(clickPosition._2).isMine) {
         currentGameState = GameState.Lost
-      } else if(allBoxesUncovered){
+      } else if (allBoxesUncovered) {
         currentGameState = GameState.Won
       }
     } else if (clickMode == ClickMode.Toggle) {
@@ -33,21 +33,15 @@ object MineFieldRefresher {
     }
     def toggleTheFlag(flag: Boolean) = {
       for (x <- 0 until size._1; y <- 0 until size._2) {
-        if (clickPosition !=(x, y)) {
-          returnMineBoxField(x)(y) = mineBoxArray(x)(y)
-        } else {
-          if (flag) {
-            returnMineBoxField(x)(y) = new MineBox((x, y), mineBoxArray(x)(y).minesAround, mineBoxArray(x)(y).isMine, true, false)
-          } else {
-            returnMineBoxField(x)(y) = new MineBox((x, y), mineBoxArray(x)(y).minesAround, mineBoxArray(x)(y).isMine, true, false)
-          }
+        if (clickPosition ==(x, y)) {
+          returnMineBoxField(x)(y) = new MineBox((x, y), mineBoxArray(x)(y).minesAround, mineBoxArray(x)(y).isMine, true, flag)
         }
       }
     }
 
     def allBoxesUncovered: Boolean = {
-      for(x <- 0 until size._1; y <- 0 until size._2){
-        if(!mineBoxArray(x)(y).isMine && mineBoxArray(x)(y).isCovered){
+      for (x <- 0 until size._1; y <- 0 until size._2) {
+        if (!mineBoxArray(x)(y).isMine && mineBoxArray(x)(y).isCovered) {
           false
         }
       }

@@ -1,3 +1,4 @@
-for(i <- 0 until 10; j <- 0 until 10){
-  print(i, j)
-}
+val array:Array[Array[Int]] = Array.ofDim[Int](10,10)
+
+val length = array.size
+

@@ -6,14 +6,11 @@ import scala.util.Random
 
 object MineFieldGenerator {
   def returnFieldAfterFirstClick(size: (Int, Int), mineCount: Int, clickPosition: (Int, Int), mineField: Array[Array[MineBox]]): Array[Array[MineBox]] = {
-    val minesPositions = assembleMinePositionsList
-    val minesAroundList = calculateMinesAround(minesPositions)
-    assembleRefreshedMineField(minesAroundList, minesPositions)
 
     def assembleMinePositionsList: List[(Int, Int)] = {
       var minePositions: List[(Int, Int)] = Nil
       val r = new Random
-      var cycles = 10
+      var cycles = mineCount
       for (i <- 0 until cycles) {
         val posX = r.nextInt(size._1)
         val posY = r.nextInt(size._2)
@@ -64,24 +61,27 @@ object MineFieldGenerator {
       }
 
       def getMineAroundBox(checkPosition: (Int, Int), minePositions: List[(Int, Int)]): Int = {
-        if (minePositions.contains(checkPosition)) {
+        if (minePositions.contains(checkPosition))
           1
-        }
         0
       }
       minesAroundMap
     }
 
     def assembleRefreshedMineField(minesAround: Array[Array[Int]], minePositions: List[(Int, Int)]): Array[Array[MineBox]] = {
-      val mineBoxField: Array[Array[MineBox]] = _
+      val mineBoxField = Array.ofDim[MineBox](size._1,size._2)
       for (x <- 0 until size._1; y <- 0 until size._2) {
         mineBoxField(x)(y) = new MineBox((x, y), minesAround(x)(y), minePositions.contains((x, y)), true, false)
       }
       mineBoxField
     }
+    val minesPositions = assembleMinePositionsList
+    val minesAroundList = calculateMinesAround(minesPositions)
+    val returnMineBoxField = assembleRefreshedMineField(minesAroundList, minesPositions)
+    returnMineBoxField
   }
 
-  def returnInitialField(size: (Int, Int), mineCount: Int): Array[Array[MineBox]] = {
+  def returnInitialField(size: (Int, Int)): Array[Array[MineBox]] = {
     val initialField = Array.ofDim[MineBox](size._1,size._2)
     for (i <- 0 until size._1; j <- 0 until size._2) {
       initialField(i)(j) = new MineBox((i, j), 0, false, true, false)
@@ -90,4 +90,6 @@ object MineFieldGenerator {
     initialField
 
   }
+
+
 }
