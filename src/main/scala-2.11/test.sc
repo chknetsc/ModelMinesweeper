@@ -1,4 +1,3 @@
-val array:Array[Array[Int]] = Array.ofDim[Int](10,10)
+val t = (5, 7)
 
-val length = array.size
-
+t._2

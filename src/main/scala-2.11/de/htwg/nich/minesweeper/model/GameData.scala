@@ -1,6 +1,8 @@
 package de.htwg.nich.minesweeper.model
 
+import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
 
+import scala.Option
 
 /**
  * Created by Boldi on 26.10.2015.
@@ -8,10 +10,14 @@ package de.htwg.nich.minesweeper.model
 
 object GameState extends Enumeration {
   type gameState = Value
-  val Won, Lost, Ingame, NewGame = Value
+  val Won, Lost, InGame, FirstClick, NewGame = Value
 }
 
 class GameData {
-
   var currentGameState = GameState.NewGame
+  var playerName = "Player1"
+  var fieldSize = (9, 9)
+  var minesOnField = 10
+  var clickPosition = None: Option[(Int, Int)]
+  var clickMode = ClickMode.Click
 }

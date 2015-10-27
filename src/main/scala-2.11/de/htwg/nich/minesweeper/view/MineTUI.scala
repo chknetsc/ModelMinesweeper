@@ -1,11 +1,27 @@
 package de.htwg.nich.minesweeper.view
 
-import de.htwg.nich.minesweeper.model.MineBox
+import de.htwg.nich.minesweeper.control.impl.MineControl
+import de.htwg.nich.minesweeper.model.{GameState, MineBox}
+import de.htwg.nich.minesweeper.observer.Observer
+
+import scala.io.StdIn
 
 /**
  * Created by Boldi on 19.10.2015.
  */
-class MineTUI {
+class MineTUI(controller: MineControl) extends Runnable with Observer  {
+
+  override def run(): Unit = {
+    while (controller.gameData.currentGameState != GameState.Lost || controller.gameData.currentGameState != GameState.Won ) {
+      update()
+      input()
+    }
+  }
+
+   def input(): Unit = {
+    val input = StdIn.readLine()
+    controller.handleInput(input)
+  }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {
     val sb = new StringBuilder
@@ -27,29 +43,31 @@ class MineTUI {
 
     for (y <- 0 until sizeY) {
       if (y < numberWithTwoDigits) {
-        sb.append("{ ").append(y).append("}");
+        sb.append("{ ").append(y).append("}")
       } else {
-        sb.append("{").append(y).append("}");
+        sb.append("{").append(y).append("}")
       }
 
       for (x <- 0 until sizeX) {
         val thisBox: MineBox = mineField(x)(y)
         if (thisBox.isFlagged && thisBox.isCovered) {
-          sb.append("[ F]");
+          sb.append("[ F]")
         } else if (thisBox.isCovered) {
-          sb.append("[  ]");
+          sb.append("[  ]")
         } else if (thisBox.isMine) {
-          sb.append("[ X]");
+          sb.append("[ X]")
         } else {
           sb.append("[ ").append(thisBox.minesAround)
-            .append("]");
+            .append("]")
         }
       }
-      sb.append(newline);
+      sb.append(newline)
     }
-
-    print((sb.toString))
-
+    print(sb.toString())
   }
 
+  override def update(): Unit = {
+    println(controller.gameData.clickPosition)
+    printTUI(controller.getMineField)
+  }
 }
