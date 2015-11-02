@@ -17,13 +17,13 @@ class MineControl extends Observable {
     println(inputArray.size)
     inputArray(0) match {
       case "show" =>
-        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgröße liegt
+        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgroesse liegt
         if ((gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(1)) &&  (gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(2))) {
           gameData.clickMode = ClickMode.Click
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
         }
       case "flag" =>
-        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgröße liegt
+        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgroesse liegt
         if ((gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(1)) &&  (gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(2))) {
           gameData.clickMode = ClickMode.Toggle
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
