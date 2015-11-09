@@ -11,11 +11,9 @@ object Minesweeper {
 
   def main(args: Array[String]) {
     val mineController = new MineControl
-
     val mineTUI = new MineTUI(mineController)
     mineController.addObserver(mineTUI)
     mineTUI.run()
-
   }
 
 }

@@ -9,18 +9,23 @@ import scala.io.StdIn
 /**
  * Created by Boldi on 19.10.2015.
  */
-class MineTUI(controller: MineControl) extends Runnable with Observer  {
+class MineTUI(controller: MineControl) extends Runnable with Observer {
 
   override def run(): Unit = {
-    while (controller.gameData.currentGameState != GameState.Lost || controller.gameData.currentGameState != GameState.Won ) {
-      update()
+    update()
+    while (controller.gameData.currentGameState != GameState.Lost || controller.gameData.currentGameState != GameState.Won) {
       input()
     }
   }
 
-   def input(): Unit = {
+  def input(): Unit = {
     val input = StdIn.readLine()
     controller.handleInput(input)
+  }
+
+  override def update(): Unit = {
+    println(controller.gameData.clickPosition)
+    printTUI(controller.getMineField)
   }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {
@@ -64,10 +69,5 @@ class MineTUI(controller: MineControl) extends Runnable with Observer  {
       sb.append(newline)
     }
     print(sb.toString())
-  }
-
-  override def update(): Unit = {
-    println(controller.gameData.clickPosition)
-    printTUI(controller.getMineField)
   }
 }

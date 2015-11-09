@@ -13,32 +13,51 @@ class MineControl extends Observable {
 
   def handleInput(input: String): Unit = {
     // Input String Pattern: show/flag, x, y
-    val inputArray = input.split(",")
-    println(inputArray.size)
+    val inputArray = input.replaceAll(" ", "").split(",")
     inputArray(0) match {
       case "show" =>
-        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgroesse liegt
-        if ((gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(1)) &&  (gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(2))) {
+        if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Click
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
+          changeGameState
         }
       case "flag" =>
-        // FIXME Fehler bei Test ob x/y der Eingabe in der Feldgroesse liegt
-        if ((gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(1)) &&  (gameData.fieldSize._1 to gameData.fieldSize._2 contains inputArray(2))) {
+        if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Toggle
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
+          changeGameState
         }
+      case default =>
+        // TODO FEHLERBEHANDLUNG
     }
     notifyObservers()
   }
 
+  def changeGameState: Unit = {
+    gameData.currentGameState match {
+      case GameState.NewGame =>
+        println("Change NEW GAME")
+        gameData.currentGameState = GameState.FirstClick
+      case GameState.FirstClick =>
+        println("Change FIRST CLICK")
+        gameData.currentGameState = GameState.InGame
+      case GameState.InGame =>
+        println("Is in InGAME")
+
+    }
+  }
+
   def getMineField: Array[Array[MineBox]] =
     gameData.currentGameState match  {
-      case GameState.NewGame => MineFieldGenerator.returnInitialField(gameData.fieldSize)
-      case GameState.FirstClick => MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0,0))
+      case GameState.NewGame =>
+        println("NEW GAME")
+        MineFieldGenerator.returnInitialField(gameData.fieldSize)
+      case GameState.FirstClick =>
+        println("FIRST CLICK")
+        MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0,0))
       case GameState.InGame =>
+        println("InGAME")
         val mineBoxArray = MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0,0))
         MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, mineBoxArray, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
   }
-
 }

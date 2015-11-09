@@ -24,6 +24,7 @@ object MineFieldRefresher {
         toggleTheFlag(true)
       }
     }
+
     def toggleTheFlag(flag: Boolean) = {
       for (x <- 0 until size._1; y <- 0 until size._2) {
         if (clickPosition ==(x, y)) {

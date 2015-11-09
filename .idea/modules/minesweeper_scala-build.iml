@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id="minesweeper_scala-build" external.linked.project.path="$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project" external.root.project.path="$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala" external.system.id="SBT" sbt.imports="sbt._, Keys._, dsl._, _root_.sbt.plugins.IvyPlugin, _root_.sbt.plugins.JvmPlugin, _root_.sbt.plugins.CorePlugin, _root_.sbt.plugins.JUnitXmlReportPlugin" sbt.resolvers="https://repo1.maven.org/maven2/|maven|public, C:\Users\Boldi\.ivy2\cache|ivy|Local cache" type="SBT_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project/target/idea-classes" />
-    <output-test url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project/target/idea-test-classes" />
+    <output url="file://$MODULE_DIR$/../../project/target/idea-classes" />
+    <output-test url="file://$MODULE_DIR$/../../project/target/idea-test-classes" />
     <exclude-output />
-    <content url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project">
-      <sourceFolder url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project" isTestSource="false" />
-      <excludeFolder url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project/project/target" />
-      <excludeFolder url="file://$APPLICATION_HOME_DIR$/Projects/Minesweeper_Scala/project/target" />
+    <content url="file://$MODULE_DIR$/../../project">
+      <sourceFolder url="file://$MODULE_DIR$/../../project" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../project/project/target" />
+      <excludeFolder url="file://$MODULE_DIR$/../../project/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
