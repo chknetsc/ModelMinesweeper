@@ -9,7 +9,11 @@ object MineFieldGenerator {
 
     def assembleMinePositionsList: List[(Int, Int)] = {
       var minePositions: List[(Int, Int)] = Nil
-      val r = new Random
+      minePositions = (0,0) :: minePositions
+      minePositions = (3,0) :: minePositions
+      minePositions
+
+      /*val r = new Random
       var posX = 0
       var posY = 0
       for (i <- 0 until mineCount) {
@@ -44,7 +48,7 @@ object MineFieldGenerator {
         }
         return false
       }
-      minePositions
+      minePositions*/
     }
 
     def calculateMinesAround(minePositions: List[(Int, Int)]): Array[Array[MineBox]] = {
