@@ -10,79 +10,96 @@ object MineFieldGenerator {
     def assembleMinePositionsList: List[(Int, Int)] = {
       var minePositions: List[(Int, Int)] = Nil
       val r = new Random
-      var cycles = mineCount
-      for (i <- 0 until cycles) {
-        val posX = r.nextInt(size._1)
-        val posY = r.nextInt(size._2)
-        addIfNotInListYet((posX, posY), clickPosition)
+      var posX = 0
+      var posY = 0
+      for (i <- 0 until mineCount) {
+        def generateMines(): Unit = {
+          def generatePositionX(): Unit = {
+            posX = r.nextInt(size._1)
+            if (posX == clickPosition._1) {
+              generatePositionX
+            }
+          }
+          def generatePositionY(): Unit = {
+            posY = r.nextInt(size._2)
+            if (posY == clickPosition._2) {
+              generatePositionY
+            }
+          }
+          generatePositionX()
+          generatePositionY()
+          val addedToList = addIfNotInListYet((posX, posY))
+          if (!addedToList) {
+            generateMines()
+          }
+
+        }
+        generateMines()
       }
 
-      def addIfNotInListYet(minePosition: (Int, Int), clickPosition: (Int, Int)): Unit = {
-        if (!(minePositions.contains(minePosition) && minePosition != clickPosition)) {
+      def addIfNotInListYet(minePosition: (Int, Int)): Boolean = {
+        if (!(minePositions.contains(minePosition))) {
           minePositions = minePosition :: minePositions
-        } else {
-          cycles += 1
+          return true
         }
+        return false
       }
       minePositions
     }
 
-    def calculateMinesAround(minePositions: List[(Int, Int)]): Array[Array[Int]] = {
-      val minesAroundMap = Array.ofDim[Int](size._1, size._2)
-      var minesAround = 0
+    def calculateMinesAround(minePositions: List[(Int, Int)]): Array[Array[MineBox]] = {
+      val mineBoxField = Array.ofDim[MineBox](size._1, size._2)
       for (x <- 0 until size._1; y <- 0 until size._2) {
-        if (y - 1 >= 0) {
-          if (x - 1 >= 0) {
-            minesAround += getMineAroundBox((x - 1, y - 1), minePositions)
-          }
-          if (x + 1 < size._1) {
-            minesAround += getMineAroundBox((x + 1, y - 1), minePositions)
-          }
-          minesAround += getMineAroundBox((x, y - 1), minePositions)
+        mineBoxField(x)(y) = new MineBox((x, y), 0, false, true, false)
+      }
+      for (x <- minePositions) {
+        mineBoxField(x._1)(x._2) = mineBoxField(x._1)(x._2).setMine()
+        if (inRange(x._1 - 1, x._2 - 1)) {
+          mineBoxField(x._1 - 1)(x._2 - 1) = mineBoxField(x._1 - 1)(x._2 - 1).increaseMinesAroundCount()
         }
+        if (inRange(x._1 - 1, x._2)) {
+          mineBoxField(x._1 - 1)(x._2) = mineBoxField(x._1 - 1)(x._2).increaseMinesAroundCount()
 
-        if (y + 1 < size._2) {
-          if (x - 1 >= 0) {
-            minesAround += getMineAroundBox((x - 1, y + 1), minePositions)
-          }
-          if (x + 1 < size._1) {
-            minesAround += getMineAroundBox((x + 1, y + 1), minePositions)
-          }
-          minesAround += getMineAroundBox((x, y + 1), minePositions)
         }
+        if (inRange(x._1 - 1, x._2 + 1)) {
+          mineBoxField(x._1 - 1)(x._2 + 1) = mineBoxField(x._1 - 1)(x._2 + 1).increaseMinesAroundCount()
 
-        if (x - 1 >= 0) {
-          minesAround += getMineAroundBox((x - 1, y), minePositions)
         }
-        if (x + 1 < size._1) {
-          minesAround += getMineAroundBox((x + 1, y), minePositions)
+        if (inRange(x._1, x._2 - 1)) {
+          mineBoxField(x._1)(x._2 - 1) = mineBoxField(x._1)(x._2 - 1).increaseMinesAroundCount()
+
         }
-        minesAroundMap(x)(y) = minesAround
+        if (inRange(x._1, x._2 + 1)) {
+          mineBoxField(x._1)(x._2 + 1) = mineBoxField(x._1)(x._2 + 1).increaseMinesAroundCount()
+
+        }
+        if (inRange(x._1 + 1, x._2 - 1)) {
+          mineBoxField(x._1 + 1)(x._2 - 1) = mineBoxField(x._1 + 1)(x._2 - 1).increaseMinesAroundCount()
+
+        }
+        if (inRange(x._1 + 1, x._2)) {
+          mineBoxField(x._1 + 1)(x._2) = mineBoxField(x._1 + 1)(x._2).increaseMinesAroundCount()
+
+        }
+        if (inRange(x._1 + 1, x._2 + 1)) {
+          mineBoxField(x._1 + 1)(x._2 + 1) = mineBoxField(x._1 + 1)(x._2 + 1).increaseMinesAroundCount()
+
+        }
       }
 
-      def getMineAroundBox(checkPosition: (Int, Int), minePositions: List[(Int, Int)]): Int = {
-        if (minePositions.contains(checkPosition))
-          1
-        0
-      }
-      minesAroundMap
-    }
+      def inRange(position: (Int, Int)): Boolean = position._1 < size._1 && position._1 > -1 && position._2 < size._2 && position._2 > -1
 
-    def assembleRefreshedMineField(minesAround: Array[Array[Int]], minePositions: List[(Int, Int)]): Array[Array[MineBox]] = {
-      val mineBoxField = Array.ofDim[MineBox](size._1,size._2)
-      for (x <- 0 until size._1; y <- 0 until size._2) {
-        mineBoxField(x)(y) = new MineBox((x, y), minesAround(x)(y), minePositions.contains((x, y)), true, false)
-      }
       mineBoxField
     }
+
     val minesPositions = assembleMinePositionsList
-    val minesAroundList = calculateMinesAround(minesPositions)
-    val returnMineBoxField = assembleRefreshedMineField(minesAroundList, minesPositions)
-    returnMineBoxField
+    val mineField = calculateMinesAround(minesPositions)
+
+    mineField
   }
 
   def returnInitialField(size: (Int, Int)): Array[Array[MineBox]] = {
-    val initialField = Array.ofDim[MineBox](size._1,size._2)
+    val initialField = Array.ofDim[MineBox](size._1, size._2)
     for (i <- 0 until size._1; j <- 0 until size._2) {
       initialField(i)(j) = new MineBox((i, j), 0, false, true, false)
     }

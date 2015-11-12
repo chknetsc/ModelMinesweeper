@@ -5,8 +5,8 @@ import de.htwg.nich.minesweeper.model.{GameState, MineBox, GameData}
 import de.htwg.nich.minesweeper.observer.Observable
 
 /**
- * Created by Boldi on 19.10.2015.
- */
+  * Created by Boldi on 19.10.2015.
+  */
 class MineControl extends Observable {
 
   val gameData = new GameData
@@ -28,7 +28,7 @@ class MineControl extends Observable {
           changeGameState
         }
       case default =>
-        // TODO FEHLERBEHANDLUNG
+      // TODO FEHLERBEHANDLUNG
     }
     notifyObservers()
   }
@@ -43,21 +43,24 @@ class MineControl extends Observable {
         gameData.currentGameState = GameState.InGame
       case GameState.InGame =>
         println("Is in InGAME")
-
+      case GameState.Won =>
+        println("Won!")
+        System.exit(0)
     }
   }
 
   def getMineField: Array[Array[MineBox]] =
-    gameData.currentGameState match  {
+    gameData.currentGameState match {
       case GameState.NewGame =>
         println("NEW GAME")
         MineFieldGenerator.returnInitialField(gameData.fieldSize)
       case GameState.FirstClick =>
         println("FIRST CLICK")
-        MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0,0))
+        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)), gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+        gameData.mineField
       case GameState.InGame =>
         println("InGAME")
-        val mineBoxArray = MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0,0))
-        MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, mineBoxArray, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
-  }
+        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+        gameData.mineField
+    }
 }
