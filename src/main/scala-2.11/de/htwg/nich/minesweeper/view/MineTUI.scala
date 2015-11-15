@@ -24,8 +24,9 @@ class MineTUI(controller: MineControl) extends Runnable with Observer {
   }
 
   override def update(): Unit = {
-    println(controller.gameData.clickPosition)
+    println("Selected Position: " +  controller.gameData.clickPosition)
     printTUI(controller.getMineField)
+    println(controller.getGameState)
   }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {
