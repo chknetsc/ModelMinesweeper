@@ -1,32 +1,38 @@
 package de.htwg.nich.minesweeper.view
 
-import de.htwg.nich.minesweeper.control.impl.MineControl
+import de.htwg.nich.minesweeper.control.impl.{GameLost, GameWon, UpdatePosition, MineControl}
 import de.htwg.nich.minesweeper.model.{GameState, MineBox}
 import de.htwg.nich.minesweeper.observer.Observer
 
 import scala.io.StdIn
+import scala.swing.Reactor
 
 /**
  * Created by Boldi on 19.10.2015.
  */
-class MineTUI(controller: MineControl) extends Runnable with Observer {
+class MineTUI(controller: MineControl) extends Reactor {
 
-  override def run(): Unit = {
-    update()
-    while (controller.gameData.currentGameState != GameState.Lost || controller.gameData.currentGameState != GameState.Won) {
-      input()
-    }
-  }
+  listenTo(controller)
+  update()
 
-  def input(): Unit = {
+  def input(): Boolean = {
     val input = StdIn.readLine()
-    controller.handleInput(input)
+    val continue = controller.handleInput(input)
+    continue
   }
 
-  override def update(): Unit = {
+  def update(): Unit = {
     println("Selected Position: " +  controller.gameData.clickPosition)
     printTUI(controller.gameData.mineField)
-    println(controller.getGameState)
+  }
+
+  reactions += {
+    case e: UpdatePosition =>
+      update()
+    case e: GameWon =>
+      println("WON !!!!")
+    case e: GameLost =>
+      println("LOST !!!!")
   }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {

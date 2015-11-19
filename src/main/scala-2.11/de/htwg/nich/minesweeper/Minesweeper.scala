@@ -10,15 +10,12 @@ import de.htwg.nich.minesweeper.view.{MineGUI, MineTUI}
 object Minesweeper {
 
   def main(args: Array[String]) {
+
     val mineController = new MineControl
 
     new MineGUI(mineController)
-
     val mineTUI = new MineTUI(mineController)
-    mineController.addObserver(mineTUI)
-    mineTUI.run()
-
-
+    while (mineTUI.input()){}
   }
 
 }

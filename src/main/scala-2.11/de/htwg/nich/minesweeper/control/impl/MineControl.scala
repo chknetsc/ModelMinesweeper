@@ -2,7 +2,6 @@ package de.htwg.nich.minesweeper.control.impl
 
 import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
 import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
-import de.htwg.nich.minesweeper.observer.Observable
 
 import scala.swing.Publisher
 import scala.swing.event.Event
@@ -11,72 +10,89 @@ import scala.swing.event.Event
   * Created by Boldi on 19.10.2015.
   */
 case class UpdatePosition() extends Event
+case class GameWon() extends Event
+case class GameLost() extends Event
 
-class MineControl extends Observable with Publisher {
+class MineControl extends Publisher {
 
   val gameData = new GameData
-  gameData.mineField = getMineField
+  updateMineField
 
-  def handleInput(input: String): Unit = {
-    // Input String Pattern: show/flag, x, y
+  // Closure Function
+  def positionOnField(fieldSize: Int) = (position: Int) =>  {
+    if(position >= 0 && position < fieldSize)  true
+    false
+  }
+  val xPositionOnField = positionOnField(gameData.fieldSize._1)
+  val yPositionOnField = positionOnField(gameData.fieldSize._2)
+
+  // New
+  def handleInput(clickType: Int, fieldX: Int, fieldY: Int): Boolean = {
+    val continue = true
+    if (xPositionOnField(fieldX) && yPositionOnField(fieldY)) {
+      if (clickType == 3) {
+        gameData.clickMode = ClickMode.Toggle
+      } else {
+        gameData.clickMode = ClickMode.Click
+      }
+      gameData.clickPosition = Some((fieldX, fieldY))
+      updateGame
+    }
+    continue
+  }
+
+  def updateGame() = {
+    updateMineField
+    checkGameState
+  }
+
+  def checkGameState = {
+    gameData.currentGameState match {
+      case GameState.Lost =>
+        publish(new GameLost)
+      case GameState.Won =>
+        publish(new GameWon)
+      case _ =>
+        publish(new UpdatePosition)
+    }
+  }
+
+  def updateMineField: Unit = {
+    gameData.currentGameState match {
+      case GameState.NewGame =>
+        gameData.currentGameState = GameState.FirstClick
+        gameData.mineField = MineFieldGenerator.returnInitialField(gameData.fieldSize)
+      case GameState.FirstClick =>
+        gameData.currentGameState = GameState.InGame
+        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)), gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+      case GameState.InGame =>
+        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+      case _ =>
+        // FIXME TUT nichts verbessern
+    }
+  }
+
+  // OLD
+  def handleInput(input: String): Boolean = {
     val inputArray = input.replaceAll(" ", "").split(",")
     inputArray(0) match {
       case "show" =>
         if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Click
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
-          getMineField
-          publish(new UpdatePosition)
-          //changeGameState
+          updateGame
         }
       case "flag" =>
         if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Toggle
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
-          getMineField
-          publish(new UpdatePosition)
-          //changeGameState
+          updateGame
         }
       case default =>
       // TODO FEHLERBEHANDLUNG
     }
-    notifyObservers()
+    true
   }
 
-  def getGameState: String = {
-    gameData.currentGameState match {
-      case GameState.Lost =>
-        "LOST !!!"
-      case GameState.Won =>
-        "WIN !!!"
-      case default =>
-        ""
-    }
-  }
 
-  def getMineField: Array[Array[MineBox]] =
-    gameData.currentGameState match {
-      case GameState.NewGame =>
-        println("NEW GAME")
-        gameData.currentGameState = GameState.FirstClick
-        gameData.mineField = MineFieldGenerator.returnInitialField(gameData.fieldSize)
-        gameData.mineField
-      case GameState.FirstClick =>
-        println("FIRST CLICK")
-        gameData.currentGameState = GameState.InGame
-        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)), gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
-        gameData.mineField
-      case GameState.InGame =>
-        println("InGAME")
-        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
-        gameData.mineField
-
-      // TODO ENTFRNEN UND ANDERE FEHLERBEHANDLUNG
-      case GameState.Won =>
-        System.exit(1)
-        gameData.mineField
-      case GameState.Lost =>
-        System.exit(1)
-        gameData.mineField
-    }
 }
