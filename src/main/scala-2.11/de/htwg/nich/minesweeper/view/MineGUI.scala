@@ -1,37 +1,66 @@
 package de.htwg.nich.minesweeper.view
 
-import de.htwg.nich.minesweeper.control.impl.MineControl
-import de.htwg.nich.minesweeper.model.GameState
-import de.htwg.nich.minesweeper.observer.{Observer, Observable}
+import java.awt.event.{MouseAdapter, MouseEvent}
+import javax.swing.ImageIcon
 
-import scala.swing._
+import de.htwg.nich.minesweeper.control.impl.{MineControl, UpdatePosition}
+import de.htwg.nich.minesweeper.model.GameState
+
 import scala.swing.Swing.LineBorder
+import scala.swing._
 import scala.swing.event._
-import scala.io.Source._
+
 /**
   * Created by chris on 14.11.2015.
   */
-class MineGUI(controller: MineControl) extends Frame with Observer {
+class MineGUI(controller: MineControl) extends Frame {
 
-  def gridPanel = new GridPanel(controller.gameData.fieldSize._1, controller.gameData.fieldSize._2) {
+  val buttonArray: Array[Array[Button]] = Array.ofDim(controller.gameData.fieldSize._1, controller.gameData.fieldSize._2)
+
+  listenTo(controller)
+
+  val flag = new ImageIcon(getClass.getResource("/flag.png"))
+  val mine = new ImageIcon(getClass.getResource("/mine.png"))
+
+  def gridPanel = new GridPanel(controller.gameData.fieldSize._2, controller.gameData.fieldSize._1) {
     border = LineBorder(java.awt.Color.BLACK, 2)
     background = java.awt.Color.BLACK
-    for (outerRow <- 0 until controller.gameData.fieldSize._1; outerColumn <- 0 until controller.gameData.fieldSize._2) {
-      contents += new Button()
+    for (y <- 0 until controller.gameData.fieldSize._2; x <- 0 until controller.gameData.fieldSize._1) {
+      val button = new Button("") {
+        preferredSize = new Dimension(100, 100)
+        listenTo(mouse.clicks)
+        reactions += {
+          case e: MouseClicked =>
+            println("TEST")
+          /*
+          case ButtonClicked(source) if source.peer.getButton == MouseEvent.BUTTON3=>
+            controller.handleInput("show," + x + "," + y)
+            updateButtons()
+            */
+        }
+      }
+      //listenTo(button)
+      contents += button
+      buttonArray(x)(y) = button
     }
   }
 
   contents = new BorderPanel {
     add(gridPanel, BorderPanel.Position.Center)
   }
-  title = "Mineswepper"
+  title = "Minesweeper"
   visible = true
+  peer.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
 
   menuBar = new MenuBar {
     contents += new Menu("File") {
       mnemonic = Key.F
-      contents += new MenuItem(Action("New") { controller.gameData.currentGameState = GameState.NewGame })
-      contents += new MenuItem(Action("Quit") { System.exit(0) })
+      contents += new MenuItem(Action("New") {
+        controller.gameData.currentGameState = GameState.NewGame
+      })
+      contents += new MenuItem(Action("Quit") {
+        System.exit(0)
+      })
     }
     contents += new Menu("Edit") {
       mnemonic = Key.E
@@ -40,15 +69,26 @@ class MineGUI(controller: MineControl) extends Frame with Observer {
     }
   }
 
-  override def update(): Unit = {
-    redraw
+  def updateButtons() = {
+    for (x <- 0 until controller.gameData.fieldSize._1; y <- 0 until controller.gameData.fieldSize._2) {
+      if (controller.gameData.mineField(x)(y).isFlagged) {
+        buttonArray(x)(y).icon = flag
+      } else {
+        buttonArray(x)(y).icon = null
+      }
+
+      if (!controller.gameData.mineField(x)(y).isCovered) {
+        buttonArray(x)(y).enabled = false
+        buttonArray(x)(y).text = controller.gameData.mineField(x)(y).minesAround.toString
+      }
+
+    }
+    repaint()
   }
 
-  def redraw = {
-    for (row <- 0 until controller.gameData.fieldSize._1; column <- 0 until controller.gameData.fieldSize._2) {
-      //cells(row)(column).redraw
-    }
-    repaint
+  reactions += {
+    case e: UpdatePosition =>
+      updateButtons()
   }
 
 }

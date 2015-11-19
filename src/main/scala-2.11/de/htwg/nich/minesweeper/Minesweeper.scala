@@ -12,8 +12,7 @@ object Minesweeper {
   def main(args: Array[String]) {
     val mineController = new MineControl
 
-    val mineGUI = new MineGUI(mineController)
-    mineController.addObserver(mineGUI)
+    new MineGUI(mineController)
 
     val mineTUI = new MineTUI(mineController)
     mineController.addObserver(mineTUI)

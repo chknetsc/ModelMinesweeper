@@ -11,6 +11,7 @@ object MineFieldGenerator {
       var minePositions: List[(Int, Int)] = Nil
       minePositions = (0,0) :: minePositions
       minePositions = (3,0) :: minePositions
+      minePositions = (5,4) :: minePositions
       minePositions
 
       /*val r = new Random

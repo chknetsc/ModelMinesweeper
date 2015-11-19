@@ -1,17 +1,21 @@
 package de.htwg.nich.minesweeper.control.impl
 
 import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
-import de.htwg.nich.minesweeper.model.{GameState, MineBox, GameData}
+import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
 import de.htwg.nich.minesweeper.observer.Observable
 
-import scala.swing.Swing
+import scala.swing.Publisher
+import scala.swing.event.Event
 
 /**
   * Created by Boldi on 19.10.2015.
   */
-class MineControl extends Observable {
+case class UpdatePosition() extends Event
+
+class MineControl extends Observable with Publisher {
 
   val gameData = new GameData
+  gameData.mineField = getMineField
 
   def handleInput(input: String): Unit = {
     // Input String Pattern: show/flag, x, y
@@ -21,12 +25,16 @@ class MineControl extends Observable {
         if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Click
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
+          getMineField
+          publish(new UpdatePosition)
           //changeGameState
         }
       case "flag" =>
         if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
           gameData.clickMode = ClickMode.Toggle
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
+          getMineField
+          publish(new UpdatePosition)
           //changeGameState
         }
       case default =>
@@ -51,7 +59,8 @@ class MineControl extends Observable {
       case GameState.NewGame =>
         println("NEW GAME")
         gameData.currentGameState = GameState.FirstClick
-        MineFieldGenerator.returnInitialField(gameData.fieldSize)
+        gameData.mineField = MineFieldGenerator.returnInitialField(gameData.fieldSize)
+        gameData.mineField
       case GameState.FirstClick =>
         println("FIRST CLICK")
         gameData.currentGameState = GameState.InGame
@@ -62,7 +71,7 @@ class MineControl extends Observable {
         gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
         gameData.mineField
 
-        // TODO ENTFRNEN UND ANDERE FEHLERBEHANDLUNG
+      // TODO ENTFRNEN UND ANDERE FEHLERBEHANDLUNG
       case GameState.Won =>
         System.exit(1)
         gameData.mineField

@@ -5,8 +5,8 @@ import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
 import scala.Option
 
 /**
- * Created by Boldi on 26.10.2015.
- */
+  * Created by Boldi on 26.10.2015.
+  */
 
 object GameState extends Enumeration {
   type gameState = Value
@@ -16,9 +16,9 @@ object GameState extends Enumeration {
 class GameData {
   var currentGameState = GameState.NewGame
   var playerName = "Player1"
-  var fieldSize = (4, 4)
+  var fieldSize = (7, 6)
   var minesOnField = 2
   var clickPosition = None: Option[(Int, Int)]
   var clickMode = ClickMode.Click
-  var mineField:Array[Array[MineBox]] = null
+  var mineField: Array[Array[MineBox]] = null
 }
