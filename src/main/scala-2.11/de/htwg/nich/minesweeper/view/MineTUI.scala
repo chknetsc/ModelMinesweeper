@@ -1,6 +1,6 @@
 package de.htwg.nich.minesweeper.view
 
-import de.htwg.nich.minesweeper.control.impl.{GameLost, GameWon, MineControl, UpdatePosition}
+import de.htwg.nich.minesweeper.control.impl._
 import de.htwg.nich.minesweeper.model.MineBox
 
 import scala.io.StdIn
@@ -25,13 +25,8 @@ class MineTUI(controller: MineControl) extends Reactor {
     printTUI(controller.gameData.mineField)
   }
 
-  def wonUpdate(): Unit = {
-    println("Congratulations You won the game!")
-    printTUI(controller.gameData.mineField)
-  }
-
-  def lostUpdate(): Unit = {
-    println("Sorry, you lost the game!")
+  def endUpdate(message: String): Unit = {
+    println(message)
     printTUI(controller.gameData.mineField)
 
   }
@@ -39,10 +34,10 @@ class MineTUI(controller: MineControl) extends Reactor {
   reactions += {
     case e: UpdatePosition =>
       update()
-    case e: GameWon =>
-      wonUpdate()
-    case e: GameLost =>
-      lostUpdate()
+    case e: GameEnd =>
+      endUpdate(e.message)
+    case e: NewGame =>
+      update()
   }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {

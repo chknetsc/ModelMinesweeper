@@ -16,8 +16,8 @@ object GameState extends Enumeration {
 class GameData {
   var currentGameState = GameState.NewGame
   var playerName = "Player1"
-  var fieldSize = (7, 6)
-  var minesOnField = 2
+  var fieldSize = (10, 10)
+  var minesOnField = 10
   var clickPosition = None: Option[(Int, Int)]
   var clickMode = ClickMode.Click
   var mineField: Array[Array[MineBox]] = null

@@ -11,9 +11,11 @@ import scala.swing.event.Event
   */
 case class UpdatePosition() extends Event
 
-case class GameWon() extends Event
+case class GameEnd(message: String) extends Event
 
-case class GameLost() extends Event
+case class NewGame() extends Event
+
+case class Error(errorMessage: String) extends Event
 
 class MineControl extends Publisher {
 
@@ -53,10 +55,10 @@ class MineControl extends Publisher {
     gameData.currentGameState match {
       case GameState.Lost =>
         uncoverField
-        publish(new GameLost)
+        publish(new GameEnd("Sorry " + gameData.playerName + ", you lost the game!"))
       case GameState.Won =>
         uncoverField
-        publish(new GameWon)
+        publish(new GameEnd("Congratulations " + gameData.playerName + "! You won the game!"))
       case _ =>
         publish(new UpdatePosition)
     }
@@ -64,7 +66,7 @@ class MineControl extends Publisher {
 
   def uncoverField: Unit = {
     for (x <- 0 until gameData.fieldSize._1; y <- 0 until gameData.fieldSize._2) {
-      gameData.mineField(x)(y).uncover()
+      gameData.mineField(x)(y) = gameData.mineField(x)(y).uncover()
     }
   }
 
@@ -105,6 +107,20 @@ class MineControl extends Publisher {
       case default =>
       // TODO FEHLERBEHANDLUNG
     }
+    true
+  }
+
+  def newGame(playerName: String, sizeX: Int, sizeY: Int, mines: Int): Boolean = {
+    if (sizeX * sizeY <= mines) {
+      publish(new Error("Number of mines must be smaller than field size!"))
+      return false
+    }
+    gameData.currentGameState = GameState.NewGame
+    gameData.playerName = playerName
+    gameData.minesOnField = mines
+    gameData.fieldSize = (sizeX, sizeY)
+    updateMineField
+    publish(new NewGame)
     true
   }
 

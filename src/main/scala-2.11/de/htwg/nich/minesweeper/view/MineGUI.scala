@@ -2,8 +2,7 @@ package de.htwg.nich.minesweeper.view
 
 import javax.swing.ImageIcon
 
-import de.htwg.nich.minesweeper.control.impl.{GameLost, GameWon, MineControl, UpdatePosition}
-import de.htwg.nich.minesweeper.model.GameState
+import de.htwg.nich.minesweeper.control.impl._
 
 import scala.swing.Swing.LineBorder
 import scala.swing._
@@ -14,7 +13,7 @@ import scala.swing.event._
   */
 class MineGUI(controller: MineControl) extends Frame {
 
-  val buttonArray: Array[Array[Button]] = Array.ofDim(controller.gameData.fieldSize._1, controller.gameData.fieldSize._2)
+  var buttonArray: Array[Array[Button]] = Array.ofDim(controller.gameData.fieldSize._1, controller.gameData.fieldSize._2)
 
   listenTo(controller)
 
@@ -22,11 +21,11 @@ class MineGUI(controller: MineControl) extends Frame {
   val mine = new ImageIcon(getClass.getResource("/mine.jpg"))
 
   def gridPanel = new GridPanel(controller.gameData.fieldSize._2, controller.gameData.fieldSize._1) {
+    buttonArray = Array.ofDim(controller.gameData.fieldSize._1, controller.gameData.fieldSize._2)
     border = LineBorder(java.awt.Color.BLACK, 2)
     background = java.awt.Color.BLACK
     for (y <- 0 until controller.gameData.fieldSize._2; x <- 0 until controller.gameData.fieldSize._1) {
       val button = new Button("") {
-        preferredSize = new Dimension(100, 100)
         listenTo(mouse.clicks)
         reactions += {
           case e: MouseClicked =>
@@ -44,13 +43,13 @@ class MineGUI(controller: MineControl) extends Frame {
   }
   title = "Minesweeper"
   peer.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
+  size = new Dimension(500, 500)
 
   menuBar = new MenuBar {
     contents += new Menu("File") {
       mnemonic = Key.F
       contents += new MenuItem(Action("New") {
-        controller.gameData.currentGameState = GameState.NewGame
-        controller.updateGame
+        new NewGameFrame(controller)
       })
       contents += new MenuItem(Action("Quit") {
         System.exit(0)
@@ -84,7 +83,7 @@ class MineGUI(controller: MineControl) extends Frame {
       if (controller.gameData.mineField(x)(y).isCovered) {
         buttonArray(x)(y).enabled = true
         buttonArray(x)(y).text = ""
-      } else {
+      } else if (!controller.gameData.mineField(x)(y).isCovered && !controller.gameData.mineField(x)(y).isMine) {
         buttonArray(x)(y).enabled = false
         buttonArray(x)(y).text = controller.gameData.mineField(x)(y).minesAround.toString
       }
@@ -96,10 +95,17 @@ class MineGUI(controller: MineControl) extends Frame {
   reactions += {
     case e: UpdatePosition =>
       updateButtons()
-    case e: GameWon =>
-      Dialog.showMessage(gridPanel, "Congratulations You won the game!")
-    case e: GameLost =>
-      Dialog.showMessage(gridPanel, "Sorry, you lost the game!")
+    case e: GameEnd =>
+      updateButtons()
+      Dialog.showMessage(gridPanel, e.message)
+    case e: NewGame =>
+      this.contents = new BorderPanel {
+        add(gridPanel, BorderPanel.Position.Center)
+      }
+      this.size = new Dimension(500, 500)
+      updateButtons()
+    case e: Error =>
+      Dialog.showMessage(gridPanel, e.errorMessage)
   }
 
 }
