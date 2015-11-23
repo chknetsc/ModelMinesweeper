@@ -1,7 +1,7 @@
 package de.htwg.nich.minesweeper.control.impl
 
 import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
-import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
+import de.htwg.nich.minesweeper.model.{GameData, GameState}
 
 import scala.swing.Publisher
 import scala.swing.event.Event
@@ -10,7 +10,9 @@ import scala.swing.event.Event
   * Created by Boldi on 19.10.2015.
   */
 case class UpdatePosition() extends Event
+
 case class GameWon() extends Event
+
 case class GameLost() extends Event
 
 class MineControl extends Publisher {
@@ -19,10 +21,11 @@ class MineControl extends Publisher {
   updateMineField
 
   // Closure Function
-  def positionOnField(fieldSize: Int) = (position: Int) =>  {
-    if(position >= 0 && position < fieldSize)  true
+  def positionOnField(fieldSize: Int) = (position: Int) => {
+    if (position >= 0 && position < fieldSize) true
     false
   }
+
   val xPositionOnField = positionOnField(gameData.fieldSize._1)
   val yPositionOnField = positionOnField(gameData.fieldSize._2)
 
@@ -49,11 +52,19 @@ class MineControl extends Publisher {
   def checkGameState = {
     gameData.currentGameState match {
       case GameState.Lost =>
+        uncoverField
         publish(new GameLost)
       case GameState.Won =>
+        uncoverField
         publish(new GameWon)
       case _ =>
         publish(new UpdatePosition)
+    }
+  }
+
+  def uncoverField: Unit = {
+    for (x <- 0 until gameData.fieldSize._1; y <- 0 until gameData.fieldSize._2) {
+      gameData.mineField(x)(y).uncover()
     }
   }
 
@@ -68,7 +79,7 @@ class MineControl extends Publisher {
       case GameState.InGame =>
         gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
       case _ =>
-        // FIXME TUT nichts verbessern
+      // FIXME TUT nichts verbessern
     }
   }
 
@@ -78,6 +89,9 @@ class MineControl extends Publisher {
     inputArray(0) match {
       case "show" =>
         if (inputArray(1).toInt < gameData.fieldSize._1 && inputArray(2).toInt < gameData.fieldSize._2) {
+          if (gameData.mineField(inputArray(1).toInt)(inputArray(2).toInt).isFlagged) {
+            return false
+          }
           gameData.clickMode = ClickMode.Click
           gameData.clickPosition = Some((inputArray(1).toInt, inputArray(2).toInt))
           updateGame

@@ -1,6 +1,6 @@
 package de.htwg.nich.minesweeper.control.impl
 
-import de.htwg.nich.minesweeper.model.{GameState, GameData, MineBox}
+import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
 
 
 object MineFieldRefresher {
@@ -14,8 +14,6 @@ object MineFieldRefresher {
     if (clickMode == ClickMode.Click) {
       if (mineBoxArray(clickPosition._1)(clickPosition._2).isMine) {
         gameData.currentGameState = GameState.Lost
-      } else if (allBoxesUncovered) {
-        gameData.currentGameState = GameState.Won
       } else {
         def recursiveUncovering(boxPosition: (Int, Int)): Unit = {
           def getBoxAtPosition(position: (Int, Int)): MineBox = {
@@ -64,6 +62,9 @@ object MineFieldRefresher {
           }
         }
         recursiveUncovering(clickPosition)
+        if (allBoxesUncovered) {
+          gameData.currentGameState = GameState.Won
+        }
       }
     } else if (clickMode == ClickMode.Toggle) {
       mineBoxArray(clickPosition._1)(clickPosition._2) = mineBoxArray(clickPosition._1)(clickPosition._2).toggleFlag()
@@ -71,7 +72,9 @@ object MineFieldRefresher {
 
     def allBoxesUncovered: Boolean = {
       for (x <- 0 until size._1; y <- 0 until size._2) {
-        if (!mineBoxArray(x)(y).isMine && mineBoxArray(x)(y).isCovered) return false
+        if (!mineBoxArray(x)(y).isMine && mineBoxArray(x)(y).isCovered) {
+          return false
+        }
       }
       true
     }

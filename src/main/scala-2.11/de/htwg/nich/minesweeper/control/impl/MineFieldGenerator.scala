@@ -2,16 +2,14 @@ package de.htwg.nich.minesweeper.control.impl
 
 import de.htwg.nich.minesweeper.model.MineBox
 
-import scala.util.Random
-
 object MineFieldGenerator {
   def returnFieldAfterFirstClick(size: (Int, Int), mineCount: Int, clickPosition: (Int, Int)): Array[Array[MineBox]] = {
 
     def assembleMinePositionsList: List[(Int, Int)] = {
       var minePositions: List[(Int, Int)] = Nil
-      minePositions = (0,0) :: minePositions
-      minePositions = (3,0) :: minePositions
-      minePositions = (5,4) :: minePositions
+      minePositions = (0, 0) :: minePositions
+      minePositions = (3, 0) :: minePositions
+      minePositions = (5, 4) :: minePositions
       minePositions
 
       /*val r = new Random

@@ -43,7 +43,6 @@ class MineGUI(controller: MineControl) extends Frame {
     add(gridPanel, BorderPanel.Position.Center)
   }
   title = "Minesweeper"
-  visible = true
   peer.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
 
   menuBar = new MenuBar {
@@ -57,12 +56,13 @@ class MineGUI(controller: MineControl) extends Frame {
         System.exit(0)
       })
     }
-    contents += new Menu("Edit") {
+    /*contents += new Menu("Edit") {
       mnemonic = Key.E
       //      contents += new MenuItem(Action("Copy") { controller.copy })
       //      contents += new MenuItem(Action("Paste") { controller.paste })
-    }
+    }*/
   }
+  visible = true
 
   def updateButtons() = {
     for (x <- 0 until controller.gameData.fieldSize._1; y <- 0 until controller.gameData.fieldSize._2) {
@@ -73,14 +73,13 @@ class MineGUI(controller: MineControl) extends Frame {
         buttonArray(x)(y).icon = null
       }
 
-      /*
       //  MINE
-      if (!controller.gameData.mineField(x)(y).isCovered && controller.gameData.mineField(x)(y).isMine) {
+      if (!controller.gameData.mineField(x)(y).isCovered && controller.gameData.mineField(x)(y).isMine && !controller.gameData.mineField(x)(y).isFlagged) {
         buttonArray(x)(y).icon = mine
-      } else {
+      } else if (controller.gameData.mineField(x)(y).isCovered && !controller.gameData.mineField(x)(y).isFlagged) {
         buttonArray(x)(y).icon = null
       }
-      */
+
 
       if (controller.gameData.mineField(x)(y).isCovered) {
         buttonArray(x)(y).enabled = true
@@ -98,9 +97,9 @@ class MineGUI(controller: MineControl) extends Frame {
     case e: UpdatePosition =>
       updateButtons()
     case e: GameWon =>
-      Dialog.showMessage(gridPanel, "WIN !!!!")
+      Dialog.showMessage(gridPanel, "Congratulations You won the game!")
     case e: GameLost =>
-      Dialog.showMessage(gridPanel, "LOST !!!!")
+      Dialog.showMessage(gridPanel, "Sorry, you lost the game!")
   }
 
 }

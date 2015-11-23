@@ -1,15 +1,14 @@
 package de.htwg.nich.minesweeper.view
 
-import de.htwg.nich.minesweeper.control.impl.{GameLost, GameWon, UpdatePosition, MineControl}
-import de.htwg.nich.minesweeper.model.{GameState, MineBox}
-import de.htwg.nich.minesweeper.observer.Observer
+import de.htwg.nich.minesweeper.control.impl.{GameLost, GameWon, MineControl, UpdatePosition}
+import de.htwg.nich.minesweeper.model.MineBox
 
 import scala.io.StdIn
 import scala.swing.Reactor
 
 /**
- * Created by Boldi on 19.10.2015.
- */
+  * Created by Boldi on 19.10.2015.
+  */
 class MineTUI(controller: MineControl) extends Reactor {
 
   listenTo(controller)
@@ -22,17 +21,28 @@ class MineTUI(controller: MineControl) extends Reactor {
   }
 
   def update(): Unit = {
-    println("Selected Position: " +  controller.gameData.clickPosition)
+    println("Selected Position: " + controller.gameData.clickPosition)
     printTUI(controller.gameData.mineField)
+  }
+
+  def wonUpdate(): Unit = {
+    println("Congratulations You won the game!")
+    printTUI(controller.gameData.mineField)
+  }
+
+  def lostUpdate(): Unit = {
+    println("Sorry, you lost the game!")
+    printTUI(controller.gameData.mineField)
+
   }
 
   reactions += {
     case e: UpdatePosition =>
       update()
     case e: GameWon =>
-      println("WON !!!!")
+      wonUpdate()
     case e: GameLost =>
-      println("LOST !!!!")
+      lostUpdate()
   }
 
   def printTUI(mineField: Array[Array[MineBox]]): Unit = {
