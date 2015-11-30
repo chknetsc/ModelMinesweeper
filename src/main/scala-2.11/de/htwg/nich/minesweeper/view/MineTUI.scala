@@ -15,9 +15,38 @@ class MineTUI(controller: MineControl) extends Reactor {
   update()
 
   def input(): Boolean = {
+    val possibleInputs = new StringBuilder
+    possibleInputs.append("Possible Inputs: \n")
+    possibleInputs.append("Show Field  => show, x, y \n")
+    possibleInputs.append("Flag Field  => flag, x, y \n")
+    possibleInputs.append("New Game    => new, playername, sizeX, sizeY, mines \n")
+    possibleInputs.append("End Game    => end \n")
+    println(possibleInputs)
     val input = StdIn.readLine()
-    val continue = controller.handleInput(input)
-    continue
+    processInputLine(input)
+  }
+
+  def processInputLine(input: String): Boolean = {
+    if (input != null) {
+      val inputArray = input.replaceAll(" ", "").split(",")
+      inputArray(0) match {
+        case "show" if inputArray(1).toInt < controller.gameData.fieldSize._1 && inputArray(2).toInt < controller.gameData.fieldSize._2 =>
+          controller.handleInput(1, inputArray(1).toInt, inputArray(2).toInt)
+        case "flag" if inputArray(1).toInt < controller.gameData.fieldSize._1 && inputArray(2).toInt < controller.gameData.fieldSize._2 =>
+          controller.handleInput(3, inputArray(1).toInt, inputArray(2).toInt)
+        case "new" =>
+          // TODO Validate Input
+          controller.newGame(inputArray(1), inputArray(2).toInt, inputArray(3).toInt, inputArray(4).toInt)
+        case "end" =>
+          System.exit(0)
+          false
+        case _ =>
+          println("Wrong Input !")
+          true
+      }
+    } else {
+      false
+    }
   }
 
   def update(): Unit = {
@@ -34,7 +63,7 @@ class MineTUI(controller: MineControl) extends Reactor {
   reactions += {
     case e: UpdatePosition =>
       update()
-    case e: GameEnd =>
+    case e: GameMessage =>
       endUpdate(e.message)
     case e: NewGame =>
       update()

@@ -1,10 +1,12 @@
 package de.htwg.nich.minesweeper.control.impl
 
+import akka.actor.Actor
+import akka.actor.Actor.Receive
 import de.htwg.nich.minesweeper.model.MineBox
 
 import scala.util.Random
 
-object MineFieldGenerator {
+object MineFieldGenerator extends Actor {
   def returnFieldAfterFirstClick(size: (Int, Int), mineCount: Int, clickPosition: (Int, Int)): Array[Array[MineBox]] = {
 
     def assembleMinePositionsList: List[(Int, Int)] = {
@@ -113,5 +115,7 @@ object MineFieldGenerator {
 
   }
 
-
+  override def receive: Receive = {
+    case _ => println("Generator Message")
+  }
 }

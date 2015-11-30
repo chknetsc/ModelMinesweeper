@@ -29,8 +29,7 @@ class MineGUI(controller: MineControl) extends Frame {
         listenTo(mouse.clicks)
         reactions += {
           case e: MouseClicked =>
-            if (e.peer.getButton == 1) controller.handleInput("show," + x + "," + y)
-            else if (e.peer.getButton == 3) controller.handleInput("flag," + x + "," + y)
+           controller.handleInput(e.peer.getButton, x, y)
         }
       }
       contents += button
@@ -55,11 +54,6 @@ class MineGUI(controller: MineControl) extends Frame {
         System.exit(0)
       })
     }
-    /*contents += new Menu("Edit") {
-      mnemonic = Key.E
-      //      contents += new MenuItem(Action("Copy") { controller.copy })
-      //      contents += new MenuItem(Action("Paste") { controller.paste })
-    }*/
   }
   visible = true
 
@@ -95,7 +89,7 @@ class MineGUI(controller: MineControl) extends Frame {
   reactions += {
     case e: UpdatePosition =>
       updateButtons()
-    case e: GameEnd =>
+    case e: GameMessage =>
       updateButtons()
       Dialog.showMessage(gridPanel, e.message)
     case e: NewGame =>
@@ -104,8 +98,6 @@ class MineGUI(controller: MineControl) extends Frame {
       }
       this.size = new Dimension(500, 500)
       updateButtons()
-    case e: Error =>
-      Dialog.showMessage(gridPanel, e.errorMessage)
   }
 
 }

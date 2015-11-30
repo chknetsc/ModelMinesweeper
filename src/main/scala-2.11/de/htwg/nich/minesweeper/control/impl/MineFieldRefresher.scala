@@ -1,9 +1,10 @@
 package de.htwg.nich.minesweeper.control.impl
 
+import akka.actor.Actor
 import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
 
 
-object MineFieldRefresher {
+object MineFieldRefresher extends Actor {
 
   object ClickMode extends Enumeration {
     type clickMode = Value
@@ -81,4 +82,7 @@ object MineFieldRefresher {
     mineBoxArray
   }
 
+  override def receive: Receive = {
+    case _ => println("Refesher Message")
+  }
 }

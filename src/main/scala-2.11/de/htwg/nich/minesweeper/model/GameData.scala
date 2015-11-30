@@ -13,7 +13,9 @@ object GameState extends Enumeration {
   val Won, Lost, InGame, FirstClick, NewGame = Value
 }
 
+
 class GameData {
+
   var currentGameState = GameState.NewGame
   var playerName = "Player1"
   var fieldSize = (10, 10)
@@ -21,4 +23,5 @@ class GameData {
   var clickPosition = None: Option[(Int, Int)]
   var clickMode = ClickMode.Click
   var mineField: Array[Array[MineBox]] = null
+
 }
