@@ -15,6 +15,12 @@ class MineTUI(controller: MineControl) extends Reactor {
   update()
 
   def input(): Boolean = {
+    showInputs()
+    val input = StdIn.readLine()
+    processInputLine(input)
+  }
+
+  def showInputs() = {
     val possibleInputs = new StringBuilder
     possibleInputs.append("Possible Inputs: \n")
     possibleInputs.append("Show Field  => show, x, y \n")
@@ -22,8 +28,6 @@ class MineTUI(controller: MineControl) extends Reactor {
     possibleInputs.append("New Game    => new, playername, sizeX, sizeY, mines \n")
     possibleInputs.append("End Game    => end \n")
     println(possibleInputs)
-    val input = StdIn.readLine()
-    processInputLine(input)
   }
 
   def processInputLine(input: String): Boolean = {
@@ -39,14 +43,12 @@ class MineTUI(controller: MineControl) extends Reactor {
           controller.newGame(inputArray(1), inputArray(2).toInt, inputArray(3).toInt, inputArray(4).toInt)
         case "end" =>
           System.exit(0)
-          false
         case _ =>
           println("Wrong Input !")
           true
       }
-    } else {
-      false
     }
+    true
   }
 
   def update(): Unit = {
@@ -62,10 +64,12 @@ class MineTUI(controller: MineControl) extends Reactor {
 
   reactions += {
     case e: UpdatePosition =>
+      println("Udate")
       update()
     case e: GameMessage =>
       endUpdate(e.message)
     case e: NewGame =>
+      println("eNew")
       update()
   }
 

@@ -1,6 +1,7 @@
 package de.htwg.nich.minesweeper.control.impl
 
 import akka.actor.Actor
+import de.htwg.nich.minesweeper.control.impl.GameDataMessage._
 import de.htwg.nich.minesweeper.model.{GameData, GameState, MineBox}
 
 
@@ -83,6 +84,7 @@ object MineFieldRefresher extends Actor {
   }
 
   override def receive: Receive = {
-    case _ => println("Refesher Message")
+    case InitField(gameData) =>
+      sender ! ReturnGameField(returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData))
   }
 }

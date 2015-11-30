@@ -1,7 +1,6 @@
 package de.htwg.nich.minesweeper
 
-import de.htwg.nich.minesweeper.control.impl.{MineControl, MineFieldGenerator}
-import de.htwg.nich.minesweeper.model.MineBox
+import de.htwg.nich.minesweeper.control.impl.{MineControl}
 import de.htwg.nich.minesweeper.view.{MineGUI, MineTUI}
 
 /**
@@ -15,7 +14,7 @@ object Minesweeper {
 
     new MineGUI(mineController)
     val mineTUI = new MineTUI(mineController)
-    while (mineTUI.input()){}
+    while(true) {mineTUI.input()}
   }
 
 }

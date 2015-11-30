@@ -63,7 +63,14 @@ class MineGUI(controller: MineControl) extends Frame {
       if (controller.gameData.mineField(x)(y).isFlagged) {
         buttonArray(x)(y).icon = flag
       } else {
-        buttonArray(x)(y).icon = null
+        try {
+          buttonArray(x)(y).icon = null
+        } catch {
+          case e: Exception =>
+            println("X = " + x)
+            println("X = " + x)
+            println("Button = " + buttonArray(x)(y))
+        }
       }
 
       //  MINE
@@ -88,15 +95,18 @@ class MineGUI(controller: MineControl) extends Frame {
 
   reactions += {
     case e: UpdatePosition =>
+      println("GUI UPDATE")
       updateButtons()
     case e: GameMessage =>
       updateButtons()
       Dialog.showMessage(gridPanel, e.message)
     case e: NewGame =>
+      println("GUI NEW")
       this.contents = new BorderPanel {
         add(gridPanel, BorderPanel.Position.Center)
       }
       this.size = new Dimension(500, 500)
+      println(buttonArray)
       updateButtons()
   }
 

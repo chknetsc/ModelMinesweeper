@@ -1,6 +1,7 @@
 package de.htwg.nich.minesweeper.control.impl
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{Actor, Props, ActorSystem}
+import de.htwg.nich.minesweeper.control.impl.GameDataMessage._
 import de.htwg.nich.minesweeper.control.impl.MineFieldRefresher.ClickMode
 import de.htwg.nich.minesweeper.model.{GameData, GameState}
 
@@ -11,11 +12,25 @@ import scala.swing.Publisher
   */
 class MineControl extends Publisher {
 
+  class ActorController extends Actor {
+    override def receive: Actor.Receive = {
+      case m: ReturnFirstGameField =>
+        gameData.mineField = m.gameField
+        refresher.tell(InitField(gameData), controller)
+      case m: ReturnGameField =>
+        gameData.mineField = m.gameField
+        checkGameState
+    }
+  }
+
   val gameData = new GameData
   val system = ActorSystem("MyActorSystem")
+  val controller = system.actorOf(Props(new ActorController), "controller")
   val generator = system.actorOf(Props(MineFieldGenerator), "generator")
   val refresher = system.actorOf(Props(MineFieldRefresher), "refresher")
   updateMineField
+
+
 
   def newGame(playerName: String, sizeX: Int, sizeY: Int, mines: Int): Boolean = {
     if (sizeX * sizeY <= mines) {
@@ -51,22 +66,23 @@ class MineControl extends Publisher {
 
   def updateGame() = {
     updateMineField
-    checkGameState
+    //checkGameState
   }
 
   def updateMineField: Unit = {
     gameData.currentGameState match {
       case GameState.NewGame =>
         gameData.currentGameState = GameState.FirstClick
-        generator ! "Test"
-        gameData.mineField = MineFieldGenerator.returnInitialField(gameData.fieldSize)
+        generator.tell(InitEmptyField(gameData), controller)
+        //gameData.mineField = MineFieldGenerator.returnInitialField(gameData.fieldSize)
       case GameState.FirstClick =>
         gameData.currentGameState = GameState.InGame
-        generator ! "Test"
-        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)), gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+        generator.tell(InitField(gameData), controller)
+        //val mineField = MineFieldGenerator.returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0))
+        //gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
       case GameState.InGame =>
-      refresher ! "Test2"
-        gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
+        refresher.tell(InitField(gameData), controller)
+        //gameData.mineField = MineFieldRefresher.returnRefreshedMineField(gameData.fieldSize, gameData.mineField, gameData.clickPosition.getOrElse(0, 0), gameData.clickMode, gameData)
       case _ =>
       // TODO Error Handling
         publish(new GameMessage("Fatal Error -> Invalid GameState !!!!!!!!!!!!!!!!"))
@@ -98,4 +114,6 @@ class MineControl extends Publisher {
   }
   val xPositionOnField = positionOnField(gameData.fieldSize._1)
   val yPositionOnField = positionOnField(gameData.fieldSize._2)
+
+
 }
