@@ -9,6 +9,5 @@ object GameDataMessage {
 
   case class InitEmptyField(gameData: GameData)
   case class InitField(gameData: GameData)
-  case class ReturnFirstGameField(gameField: Array[Array[MineBox]])
   case class ReturnGameField(gameField: Array[Array[MineBox]])
 }

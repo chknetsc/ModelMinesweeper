@@ -1,22 +1,29 @@
 package de.htwg.nich.minesweeper.control.impl
 
-import akka.actor.{Props, ActorSystem}
-import de.htwg.nich.minesweeper.control.impl.GameDataMessage.{InitField, InitEmptyField}
+import akka.actor.Actor.Receive
+import akka.actor.{Actor, Props, ActorSystem}
+import akka.testkit.TestKitBase
+import de.htwg.nich.minesweeper.control.impl.GameDataMessage.InitEmptyField
+import de.htwg.nich.minesweeper.model.GameData
 import org.specs2.mutable.SpecificationWithJUnit
 
 /**
   * Created by chris on 05.01.2016.
   */
-class MineFieldGeneratorSpecs extends SpecificationWithJUnit {
+class MineFieldGeneratorSpecs extends SpecificationWithJUnit  {
+
+
 
   "A new MineFieldGenerator" should {
-    val system = ActorSystem("MyActorSystem")
-    val generator = system.actorOf(Props(MineFieldGenerator), "generator")
+    val gameData = new GameData
+    //val controller = system.actorOf(Props(new ActorController), "controller")
 
     "generate default Field" in {
+
       //generator.tell(InitEmptyField(gameData), controller)
-      //generator.returnInitialField(10, 10).length must be_==(10)
+      //expectMsg(true)
       true must beTrue
+
     }
 
     "generate fistClick Field" in {

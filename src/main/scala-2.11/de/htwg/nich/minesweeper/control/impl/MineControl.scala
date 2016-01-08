@@ -10,13 +10,10 @@ import scala.swing.Publisher
 /**
   * Created by Boldi on 19.10.2015.
   */
-class MineControl extends Publisher {
+class MineControl extends Publisher  {
 
   class ActorController extends Actor {
     override def receive: Actor.Receive = {
-      case m: ReturnFirstGameField =>
-        gameData.mineField = m.gameField
-        refresher.tell(InitField(gameData), controller)
       case m: ReturnGameField =>
         gameData.mineField = m.gameField
         checkGameState
