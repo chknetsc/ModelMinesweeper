@@ -132,6 +132,6 @@ object MineFieldGenerator extends Actor {
     case InitEmptyField(gameData) =>
       sender ! ReturnGameField(returnInitialField(gameData.fieldSize))
     case InitField(gameData) =>
-      sender ! ReturnGameField(returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)))
+      sender ! ReturnMineField(returnFieldAfterFirstClick(gameData.fieldSize, gameData.minesOnField, gameData.clickPosition.getOrElse(0, 0)))
   }
 }

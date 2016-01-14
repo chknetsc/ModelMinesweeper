@@ -14,6 +14,9 @@ class MineControl extends Publisher  {
 
   class ActorController extends Actor {
     override def receive: Actor.Receive = {
+      case m: ReturnMineField =>
+        gameData.mineField = m.gameField
+        refresher.tell(InitField(gameData), controller)
       case m: ReturnGameField =>
         gameData.mineField = m.gameField
         checkGameState
@@ -69,6 +72,7 @@ class MineControl extends Publisher  {
   }
 
   def updateMineField: Unit = {
+    println("GameState:" + gameData.currentGameState)
     gameData.currentGameState match {
       case GameState.NewGame =>
         gameData.currentGameState = GameState.FirstClick
