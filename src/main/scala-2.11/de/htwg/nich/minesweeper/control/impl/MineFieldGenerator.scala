@@ -21,7 +21,22 @@ object MineFieldGenerator extends Actor {
       var posY = 0
       for (i <- 0 until mineCount) {
         def generateMines(): Unit = {
-          def generatePositionX(): Unit = {
+          def generateNewPosition(): Unit = {
+            posX = r.nextInt(size._1)
+            posY = r.nextInt(size._2)
+            if(posX == clickPosition._1 && posY == clickPosition._2){
+              generateNewPosition()
+            }
+            val addToList = addIfNotInListYet((posX, posY))
+            if(!addToList){
+              generateNewPosition()
+            }
+          }
+          generateNewPosition()
+
+        }
+        generateMines()
+          /*def generatePositionX(): Unit = {
             posX = r.nextInt(size._1)
             if (posX == clickPosition._1) {
               generatePositionX
@@ -38,10 +53,8 @@ object MineFieldGenerator extends Actor {
           val addedToList = addIfNotInListYet((posX, posY))
           if (!addedToList) {
             generateMines()
-          }
+          }*/
 
-        }
-        generateMines()
       }
 
       def addIfNotInListYet(minePosition: (Int, Int)): Boolean = {

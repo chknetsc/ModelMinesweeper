@@ -7,6 +7,7 @@ import de.htwg.nich.minesweeper.model.{MineBox, GameData}
  */
 object GameDataMessage {
 
+  case class UpdateField(gameData: GameData)
   case class InitEmptyField(gameData: GameData)
   case class InitField(gameData: GameData)
   case class ReturnGameField(gameField: Array[Array[MineBox]])

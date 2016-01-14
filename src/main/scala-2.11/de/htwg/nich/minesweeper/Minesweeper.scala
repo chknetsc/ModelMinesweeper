@@ -17,7 +17,6 @@ object Minesweeper {
     new MineGUI(mineController)
     val mineTUI = new MineTUI(mineController)
 
-    mineController.handleInput(1, 0, 0)
     while(true) {mineTUI.input()}
   }
 

@@ -44,6 +44,8 @@ class MineControl extends Publisher  {
   }
 
   def handleInput(clickType: Int, fieldX: Int, fieldY: Int): Boolean = {
+    val xPositionOnField = positionOnField(gameData.fieldSize._1)
+    val yPositionOnField = positionOnField(gameData.fieldSize._2)
     val continue = false
     if (xPositionOnField(fieldX) && yPositionOnField(fieldY)) {
       if (gameData.mineField(fieldX)(fieldY).isCovered) {
@@ -109,8 +111,6 @@ class MineControl extends Publisher  {
   def positionOnField(fieldSize: Int) = (position: Int) => {
     if (position >= 0 && position < fieldSize) true else false
   }
-  val xPositionOnField = positionOnField(gameData.fieldSize._1)
-  val yPositionOnField = positionOnField(gameData.fieldSize._2)
 
 
 }

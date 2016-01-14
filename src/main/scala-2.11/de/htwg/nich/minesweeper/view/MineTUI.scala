@@ -39,7 +39,6 @@ class MineTUI(controller: MineControl) extends Reactor {
         case "flag" if inputArray(1).toInt < controller.gameData.fieldSize._1 && inputArray(2).toInt < controller.gameData.fieldSize._2 =>
           controller.handleInput(3, inputArray(1).toInt, inputArray(2).toInt)
         case "new" =>
-          // TODO Validate Input
           controller.newGame(inputArray(1), inputArray(2).toInt, inputArray(3).toInt, inputArray(4).toInt)
         case "end" =>
           System.exit(0)
@@ -69,7 +68,7 @@ class MineTUI(controller: MineControl) extends Reactor {
     case e: GameMessage =>
       endUpdate(e.message)
     case e: NewGame =>
-      println("eNew")
+      println("New")
       update()
   }
 
