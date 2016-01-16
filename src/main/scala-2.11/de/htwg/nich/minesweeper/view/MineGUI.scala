@@ -83,6 +83,7 @@ class MineGUI(controller: MineControl) extends Frame {
 
       if (controller.gameData.mineField(x)(y).isCovered) {
         buttonArray(x)(y).enabled = true
+        println("X: " + x + ", Y: " + y)
         buttonArray(x)(y).text = ""
       } else if (!controller.gameData.mineField(x)(y).isCovered && !controller.gameData.mineField(x)(y).isMine) {
         buttonArray(x)(y).enabled = false

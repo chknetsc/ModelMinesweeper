@@ -10,9 +10,9 @@ import scaldi.{Injectable, Module}
  */
 object Minesweeper {
 
-  def main(args: Array[String]) {
+  val mineController = new MineControl
 
-    val mineController = new MineControl
+  def main(args: Array[String]) {
 
     new MineGUI(mineController)
     val mineTUI = new MineTUI(mineController)

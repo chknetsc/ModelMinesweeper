@@ -10,6 +10,7 @@ import scala.swing.Publisher
 /**
   * Created by Boldi on 19.10.2015.
   */
+
 class MineControl extends Publisher  {
 
   class ActorController extends Actor {
